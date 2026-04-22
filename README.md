@@ -78,41 +78,39 @@ Acción que permite al pokemon aumentar su nivel y mejorar sus estadísticas, pu
 ## Diagrama UML
 ```mermaid
 classDiagram
-Trainer "1" *-- "1..6" Pokemon: posee y gestiona
+Trainer "1" *-- "1..6" Pokemon : owns and manages
 Pokemon "1" *-- "1" Stats
 Pokemon "1" *-- "1" Moveset
-Moveset "1" o-- "4" Move: agrega
+Moveset "1" o-- "0..4" Move : contains
 CombatEngine --> Pokemon
 CombatEngine --> Move
 CombatEngine --> TypeRelations
 
-%% Esta es una clase que posee y gestiona la clase Pokemon.%%
 class Trainer{
   -name: str
   -team: list[Pokemon]
 
-  +_init_(name: str, team: list)
+  +__init__(name: str, team: list[Pokemon])
   +add_pokemon(pokemon: Pokemon)
-  +get_active_pokemon()
+  +get_active_pokemon() Pokemon
   +switch_pokemon(pokemon_index: int)
 }
 
 class Pokemon{
     -name: str
     -type: str
-    -stats: list
+    -stats: Stats
     -level: int
     -appearance: str
-    -moveset: list
+    -moveset: Moveset
     -evolution_stage: int
 
-    +_init_(name: str, type: str, stats: list, level: int, appearance: str, special_ability: str) 
+    +__init__(name: str, type: str, stats: Stats, level: int, appearance: str, special_ability: str)
     +move(target: Pokemon, move_power: float) void
     +defend(damage_received: float) void
-    +evolve(new_level: int, new_ability: str): void
+    +evolve(new_level: int, new_ability: str) void
 }
 
-%% El constructor de la clase Pokemon deberá recibir una instancia de la clase Stats o los valores para crearla.%%
 class Stats{
     -hp: int
     -attack: float
@@ -120,10 +118,9 @@ class Stats{
     -speed: int
     -special_attack: float
 
-    +_init_(hp: int, attack: float, defense: float, speed: int, special_attack: float)
+    +__init__(hp: int, attack: float, defense: float, speed: int, special_attack: float)
 }
 
-%% Clase Move que mandará 4 movimientos a la clase Moveset.%%
 class Move{
     -name: str
     -type: str
@@ -131,52 +128,43 @@ class Move{
     -accuracy: float
     -pp: int
 
-    +_init_(name: str, type: str, power: float, accuracy: float)
+    +__init__(name: str, type: str, power: float, accuracy: float)
     +calculate_damage() float
 }
 
-%% Clase Moveset: Gestionará los cuatro movimientos (objetos Move) que enviará a la calse Pokemon.%%
 class Moveset{
-    -moves: list
+    -moves: list[Move]
 }
 
-%% Esta función recibirá al attacker (Pokémon), al defender (Pokémon) y al move (Movimiento).%%
 class CombatEngine{
-    +calculate_damage() 
-    %% Dentro de calculate_damage, debe usar (llamar a) los objetos y sus métodos: %%
-    %%El nivel y ataque del attacker (de pokemon.level y pokemon.stats).La defensa del defender (de pokemon.stats).%%
-    %%El poder del movimiento (de move.power).%%
-    %%La efectividad del tipo (llamando al get_effectiveness de la instancia de TypeRelations).%%
-    +hit_accuracy() %% Está función recibirá accuracy para calcular si un movimiento acierta o falla.%%
+    +calculate_damage(attacker: Pokemon, defender: Pokemon, move: Move) float
+    +hit_accuracy(accuracy: float) bool
 }
 
-%% Clase TypeRelations: Utiliza el atributo de la clase Pokemon "type: str" para gestionar en un diccionario de diccionarios que definan las interacciones entre tipos.%%
-%% Una clase TypeRelations robusta, sin dependencias externas, lista para que el CombatEngine la consuma.%%
 class TypeRelations{
-    -fire_type: bool
-    -water_type: bool
-    -grass_type: bool
+    -type_chart: dict
 
     +get_effectiveness(attack_type: str, defender_types: list[str]) float
 }
 
-%%Clases hijas de la clase Pokemon.%%
 Pokemon <|-- FirePokemon
 Pokemon <|-- WaterPokemon
 Pokemon <|-- GrassPokemon
 
 class FirePokemon{
-    -type$: str = "fire_type"
+    -type: str = "fire"
 
     +__init__(name: str, stats: Stats, level: int, appearance: str, special_ability: str)
 }
+
 class WaterPokemon{
-    -type$: str = "water_type"
+    -type: str = "water"
 
     +__init__(name: str, stats: Stats, level: int, appearance: str, special_ability: str)
 }
+
 class GrassPokemon{
-    -type$: str = "grass_type"
+    -type: str = "grass"
 
     +__init__(name: str, stats: Stats, level: int, appearance: str, special_ability: str)
 }
@@ -184,14 +172,13 @@ class GrassPokemon{
 Field "1" o-- "2" Pokemon
 Field --> CombatEngine
 
-%% La clase Field gestionará los dos Pokémon activos (que ahora pueden ser FirePokemon, WaterPokemon, etc.), los turnos y las condiciones de victoria.%%
 class Field{
     -active_pokemon: list[Pokemon]
-    +resolve_turn()
-    %%Determina qué Pokemon ataca primero basandose en la velocidad de sus stats.%%
-    +execute_attack()
-    %%Llamará al CombatEngine para obtener el daño y lo aplicará al HP del Pokémon defensor.%%
+
+    +resolve_turn() void
+    +execute_attack() void
 }
+
 ```
 Se utiliza los tres metodos principales de ataque, defensa y evolucionar, con sus respectivos atributos para controlar el comportamiento del pokemon en el entorno de combate, además de los atributos generales que caracterizan a cada pokemon.
 
