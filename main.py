@@ -270,6 +270,30 @@ class CombatEngine:
         print(f"Damage: {damage}")
         return damage
 
+class FirePokemon(Pokemon):
+    def __init__(self, name: str, stats: Stats, **kwargs):
+        super().__init__(name, ["Fire"], stats, **kwargs)
+    def say_type(self):
+        print(f"{self.name}: es tipo Fuego")
+
+class WaterPokemon(Pokemon):
+    def __init__(self, name: str, stats: Stats, **kwargs):
+        super().__init__(name, ["Water"], stats, **kwargs)
+    def say_type(self):
+        print(f"{self.name}: es tipo Agua")
+
+class GrassPokemon(Pokemon):
+    def __init__(self, name: str, stats: Stats, **kwargs):
+        super().__init__(name, ["Grass"], stats, **kwargs)
+    def say_type(self):
+        print(f"{self.name}: es tipo Planta")
+
+class GroundPokemon(Pokemon):
+    def __init__(self, name: str, stats: Stats, **kwargs):
+        super().__init__(name, ["Ground"], stats, **kwargs)
+    def say_type(self):
+        print(f"{self.name}: es tipo Tierra")
+
 
 class Trainer:
     def __init__(self, nombre: str, team: str, pokemon: List[Pokemon]):
@@ -320,29 +344,24 @@ def main() -> None:
 
     # Crear Pokémon con moveset
     charmander_moveset = Moveset([flame_burst])
-    charmander = Pokemon(
-        "Charmander",
-        ["Fire"],
-        charmander_stats,
-        life=20,
-        attack=2,
-        moveset=charmander_moveset,
-    )
+    charmander = FirePokemon("Charmander",
+                             charmander_stats,
+                             life=20,
+                             attack=2,
+                             moveset=charmander_moveset)
 
     bulbasaur_moveset = Moveset([vine_whip])
-    bulbasaur = Pokemon(
-        "Bulbasaur",
-        ["Grass"],
-        bulbasaur_stats,
-        life=20,
-        defense=0.3,
-        moveset=bulbasaur_moveset,
-    )
+    bulbasaur  = GrassPokemon("Bulbasaur",
+                              bulbasaur_stats,
+                              life=20,
+                              defense=0.3,
+                              moveset=bulbasaur_moveset)
 
     squirtle_moveset = Moveset([water_gun])
-    squirtle = Pokemon(
-        "Squirtle", ["Water"], squirtle_stats, life=20, moveset=squirtle_moveset
-    )
+    squirtle   = WaterPokemon("Squirtle",
+                              squirtle_stats,
+                              life=20,
+                              moveset=squirtle_moveset)
 
     print("\n--- BATTLE 1 ---")
     charmander.attack(bulbasaur, flame_burst, relations)
